@@ -1,0 +1,16 @@
+# Playwright artefacts
+test-results/
+playwright-report/
+
+# Node
+node_modules/
+
+# TypeScript build output
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code local data
+.claude/
