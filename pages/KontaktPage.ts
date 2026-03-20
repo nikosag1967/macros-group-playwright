@@ -29,7 +29,7 @@ export class KontaktPage extends BasePage {
   }
 
   get emailLink(): Locator {
-    return this.page.locator('a[href="mailto:info@macros-group.com"]');
+    return this.page.locator('a[href="mailto:info@macros-group.com"]').first();
   }
 
   get phoneText(): Locator {
