@@ -43,6 +43,10 @@ export default defineConfig({
     navigationTimeout: 30_000,
   },
 
+  /* Per-test timeout – generous enough for parallel runs hitting the same
+     external server (beforeEach: networkidle + cookie banner + scroll ≈ 10-15 s) */
+  timeout: 60_000,
+
   projects: [
     {
       name: 'chrome',
