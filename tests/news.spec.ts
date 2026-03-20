@@ -44,8 +44,10 @@ test.describe('News', () => {
     expect(page.url()).not.toBe(initialUrl);
     await expect(page).not.toHaveURL(/404/);
 
-    // H1 vorhanden
-    await expect(page.locator('h1').first()).toBeVisible();
+    // H1 oder H2 vorhanden (Detailseiten nutzen teils H2 als Hauptüberschrift)
+    const h1Count = await page.locator('h1').count();
+    const headingLocator = h1Count > 0 ? page.locator('h1').first() : page.locator('h2').first();
+    await expect(headingLocator).toBeVisible();
 
     // Artikel-Body hat mindestens 100 Zeichen
     const articleText = await page.locator('main, article, .elementor').first().innerText();
