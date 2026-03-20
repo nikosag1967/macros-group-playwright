@@ -88,6 +88,13 @@ for (const suite of results.suites ?? []) {
 }
 
 // ── 4. Hilfsfunktionen ───────────────────────────────────────────────────────
+const esc = str => String(str)
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/`/g, '&#96;');
+
 const fmt = ms => ms >= 1000 ? (ms / 1000).toFixed(1) + 's' : ms + 'ms';
 
 const statusBadge = status => {
@@ -107,12 +114,12 @@ const tableRows = rows.map(r => {
   const time = r.status === 'skipped' ? '—' : fmt(r.duration);
   return `
     <tr class="${r.status === 'expected' ? 'pass' : r.status === 'skipped' ? 'skip' : 'fail'}">
-      <td class="mono">${r.id}</td>
-      <td><strong>${tc.title}</strong></td>
-      <td>${tc.description}</td>
-      <td>${tc.priority}</td>
+      <td class="mono">${esc(r.id)}</td>
+      <td><strong>${esc(tc.title)}</strong></td>
+      <td>${esc(tc.description)}</td>
+      <td>${esc(tc.priority)}</td>
       <td>${statusBadge(r.status)}</td>
-      <td class="right mono">${time}</td>
+      <td class="right mono">${esc(time)}</td>
     </tr>`;
 }).join('\n');
 
