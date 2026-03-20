@@ -26,16 +26,15 @@ export class KarrierePage extends BasePage {
   /** Erster Stellentitel-Link */
   get firstJobLink(): Locator {
     return this.page
-      .getByRole('link', {
-        name: /Consultant|Senior|Projektleiter|PMO|Experte/i,
-      })
+      .locator('a')
+      .filter({ hasText: /Consultant|Senior|Projektleiter|PMO|Experte/i })
       .first();
   }
 
   /** Testimonials-Karussell-Container */
   get testimonialsCarousel(): Locator {
     return this.page
-      .locator('.swiper, .slick-slider, .owl-carousel, [class*="carousel"], [class*="testimonial"]')
+      .locator('.testimonials_carousel, .testimonials_holder, [class*="testimonials_carousel"], .swiper, .slick-slider, .owl-carousel')
       .first();
   }
 
@@ -81,23 +80,30 @@ export class KarrierePage extends BasePage {
 
   async scrollToJobListings(): Promise<void> {
     await this.page.locator('section, .elementor-section').filter({ hasText: /Stelle|Jobs|Karriere/i }).first().scrollIntoViewIfNeeded();
-    await this.page.waitForTimeout(500);
+    // Wait for Elementor entrance animation to complete
+    await this.page.waitForTimeout(1_500);
   }
 
   async scrollToTestimonials(): Promise<void> {
     const section = this.page.locator('section, .elementor-section').filter({ hasText: /Testimonial|Mitarbeiter/i }).first();
     if (await section.count() === 0) {
-      // Fallback: Scrollen bis zum Karussell-Element
       await this.testimonialsCarousel.scrollIntoViewIfNeeded();
     } else {
       await section.scrollIntoViewIfNeeded();
     }
-    await this.page.waitForTimeout(500);
+    // Wait for Elementor entrance animation to complete (removes elementor-invisible)
+    await this.page.waitForTimeout(1_500);
   }
 
   async scrollToHrContact(): Promise<void> {
-    await this.hrKontaktSection.scrollIntoViewIfNeeded();
-    await this.page.waitForTimeout(300);
+    // The HR contact is inside a collapsed accordion — scroll to the header and open it
+    const accordionHeader = this.page
+      .locator('h3.qodef-e-title-holder')
+      .filter({ hasText: /Kontakt.*Ansprechpartner/i })
+      .first();
+    await accordionHeader.scrollIntoViewIfNeeded();
+    await accordionHeader.click();
+    await this.page.waitForTimeout(600);
   }
 
   async clickNextTestimonial(): Promise<void> {
