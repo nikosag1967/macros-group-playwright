@@ -18,6 +18,7 @@ export default defineConfig({
   /* Reporter: HTML-Report + Konsolen-Ausgabe */
   reporter: [
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
+    ['json', { outputFile: 'test-results.json' }],
     ['list'],
   ],
 

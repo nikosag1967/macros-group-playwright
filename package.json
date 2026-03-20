@@ -11,6 +11,7 @@
     "test:firefox": "playwright test --project=firefox",
     "test:mobile": "playwright test --project=mobile-chrome",
     "report": "playwright show-report",
+    "report:pdf": "node generate-report.mjs",
     "codegen": "playwright codegen https://www.macros-group.net"
   },
   "devDependencies": {
