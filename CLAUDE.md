@@ -102,6 +102,19 @@ Each spec imports only the POM classes it needs. `BasePage` is instantiated ad-h
 - IT-Security nav link → `/regulations-risk/it-security/`
 - Use regex patterns (`/karriere/i`) in URL assertions to stay resilient to slug changes.
 
+## Output conventions
+
+After every `npx playwright test` run, always produce a markdown summary table — even for all-pass runs:
+
+| Test | Result | Time | Notes |
+|---|---|---|---|
+| TC-XXX-01: description | ✓ Pass | 4.2s | |
+| TC-XXX-02: description | ✗ Fail | 30.0s | Short reason |
+| TC-XXX-03: description | - Skip | — | Reason if known |
+| **Total** | | **34.2s** | |
+
+One row per test, all tests included. Total time is the wall-clock duration reported by Playwright at the end of the run.
+
 ### playwright.config.ts
 
 - `baseURL`: `https://macros-group.net`

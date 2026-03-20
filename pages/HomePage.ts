@@ -18,9 +18,15 @@ export class HomePage extends BasePage {
 
   // ── Lokale Seiten-Lokators ───────────────────────────────────────────────
 
-  /** Revolution Slider Container */
+  /**
+   * Hero-Slider/Intro Bereich.
+   *
+   * Hinweis: Die Homepage rendert hier keinen konsistenten Revolution-Slider-Container
+   * mit `.rev_slider_wrapper` o.ä. (Selektoren sind teils 0 in der DOM-Ausgabe),
+   * der Hero-Inhalt ist aber über das H1-Heading eindeutig auffindbar.
+   */
   get heroSlider(): Locator {
-    return this.page.locator('.rev_slider_wrapper, .rev-slider, #rev_slider_1_1_wrapper').first();
+    return this.page.getByRole('heading', { name: /Wir begleiten Ihre IT-Vorhaben/i }).first();
   }
 
   /** CTA „Zum Karrierecenter" */
