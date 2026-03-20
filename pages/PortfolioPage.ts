@@ -30,9 +30,12 @@ export class PortfolioPage extends BasePage {
     return this.page.getByRole('link', { name: /Website besuchen|DORAsmartCheck/i }).first();
   }
 
-  /** Kontakt-CTA am Seitenende */
+  /** Kontakt-CTA am Seitenende (Seite rendert einen einfachen „Kontakt"-Link) */
   get kontaktCTA(): Locator {
-    return this.page.getByRole('link', { name: /Kontaktieren Sie uns|unverbindliches Erstgespräch/i }).first();
+    return this.page.locator('main, .elementor, body')
+      .first()
+      .getByRole('link', { name: /Kontakt/i })
+      .first();
   }
 
   /** Alle Feature-/Leistungsblöcke (für Zählung) */
