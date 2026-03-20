@@ -41,8 +41,63 @@ export class FooterComponent {
   }
 
   async clickDatenschutz(): Promise<void> {
+    const urlBefore = this.page.url();
+    const href = await this.datenschutzLink.getAttribute('href').catch(() => null);
+    const linkCount = await this.datenschutzLink.count().catch(() => 0);
+    const isVisible = await this.datenschutzLink.first().isVisible().catch(() => false);
+
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/0c99acd0-206c-4d4e-b677-ccb6c3c7dab4', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '5c460c' },
+      body: JSON.stringify({
+        sessionId: '5c460c',
+        location: 'pages/FooterComponent.ts:clickDatenschutz:beforeClick',
+        hypothesisId: 'H1_click_not_navigating',
+        message: 'Before clicking Datenschutz link',
+        data: { urlBefore, href, linkCount, isVisible },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+
     await this.datenschutzLink.click();
     await this.page.waitForLoadState('domcontentloaded');
+
+    const urlAfter = this.page.url();
+    const bodyText = await this.page.locator('body').innerText().catch(() => '');
+    const bodyLower = bodyText.toLowerCase();
+    const hasBetroffenen = /betroffenenrechte|ihre rechte/i.test(bodyLower);
+    const hasVerantwortliche = /verantwortliche|verantwortlicher/i.test(bodyLower);
+    const has404 = bodyText.includes('404');
+    const urlMatchesDatenschutz = /datenschutz/i.test(urlAfter);
+    const first404Idx = has404 ? bodyText.indexOf('404') : -1;
+    const snippet404 =
+      first404Idx >= 0 ? bodyText.slice(Math.max(0, first404Idx - 30), first404Idx + 30) : '';
+
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/0c99acd0-206c-4d4e-b677-ccb6c3c7dab4', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '5c460c' },
+      body: JSON.stringify({
+        sessionId: '5c460c',
+        location: 'pages/FooterComponent.ts:clickDatenschutz:afterClick',
+        hypothesisId: 'H2_expected_text_missing',
+        message: 'After clicking Datenschutz link',
+        data: {
+          urlAfter,
+          urlMatchesDatenschutz,
+          has404,
+          first404Idx,
+          snippet404,
+          hasBetroffenen,
+          hasVerantwortliche,
+          bodyTextLen: bodyLower.length,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
   }
 
   async getLinkedInHref(): Promise<string | null> {

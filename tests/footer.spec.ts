@@ -48,13 +48,32 @@ test.describe('Footer', () => {
     await footer.clickDatenschutz();
 
     await expect(page).toHaveURL(/datenschutz/i);
-    await expect(page.locator('body')).not.toContainText('404');
+    // Avoid false positives: "404" may occur inside other numbers (e.g. postal codes like "94043").
+    await expect(page.locator('text=/\\b404\\b/')).toHaveCount(0);
 
     const bodyText = await page.locator('body').innerText();
+    const bodyLower = bodyText.toLowerCase();
+    const hasBetroffenen = /betroffenenrechte|ihre rechte/i.test(bodyLower);
+    const hasVerantwortliche = /verantwortliche|verantwortlicher/i.test(bodyLower);
+
+    // #region agent log
+    fetch('http://127.0.0.1:7603/ingest/0c99acd0-206c-4d4e-b677-ccb6c3c7dab4', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '5c460c' },
+      body: JSON.stringify({
+        sessionId: '5c460c',
+        location: 'tests/footer.spec.ts:TC-FOOT-02:bodyTextReady',
+        hypothesisId: 'H2_expected_text_missing',
+        message: 'TC-FOOT-02 bodyText regex checks',
+        data: { url: page.url(), hasBetroffenen, hasVerantwortliche, bodyTextLen: bodyLower.length },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
 
     // DSGVO-Pflichtabschnitte
-    expect(bodyText.toLowerCase()).toMatch(/betroffenenrechte|ihre rechte/i);
-    expect(bodyText.toLowerCase()).toMatch(/verantwortliche|verantwortlicher/i);
+    expect(bodyLower).toMatch(/betroffenenrechte|ihre rechte/i);
+    expect(bodyLower).toMatch(/verantwortliche|verantwortlicher/i);
   });
 
   // ── TC-FOOT-03 ────────────────────────────────────────────────────────────

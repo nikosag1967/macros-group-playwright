@@ -36,12 +36,40 @@ export class BasePage {
     try {
       // Warte bis der Banner sichtbar wird (Cookiebot lädt per GTM, nach DOM-ready)
       await primary.waitFor({ state: 'visible', timeout: 6_000 });
+      // #region agent log
+      fetch('http://127.0.0.1:7603/ingest/0c99acd0-206c-4d4e-b677-ccb6c3c7dab4', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '5c460c' },
+        body: JSON.stringify({
+          sessionId: '5c460c',
+          location: 'pages/BasePage.ts:dismissCookieBanner:cookieFound',
+          hypothesisId: 'H3_cookie_banner',
+          message: 'Cookie banner visible; attempting dismiss',
+          data: { url: this.page.url() },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
       await primary.click();
       // Warte bis der Dialog-Container verschwindet
       await this.page.locator('#CybotCookiebotDialog').waitFor({ state: 'hidden', timeout: 3_000 })
         .catch(() => {/* kein harter Fehler, falls Selektor abweicht */});
       await this.page.waitForTimeout(300);
     } catch {
+      // #region agent log
+      fetch('http://127.0.0.1:7603/ingest/0c99acd0-206c-4d4e-b677-ccb6c3c7dab4', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '5c460c' },
+        body: JSON.stringify({
+          sessionId: '5c460c',
+          location: 'pages/BasePage.ts:dismissCookieBanner:cookieNotFound',
+          hypothesisId: 'H3_cookie_banner',
+          message: 'Cookie banner not found within timeout',
+          data: { url: this.page.url() },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
       // Kein Cookie-Banner gefunden – Test fortsetzen
     }
   }
