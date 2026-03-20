@@ -102,6 +102,20 @@ Each spec imports only the POM classes it needs. `BasePage` is instantiated ad-h
 - IT-Security nav link → `/regulations-risk/it-security/`
 - Use regex patterns (`/karriere/i`) in URL assertions to stay resilient to slug changes.
 
+## Fix Confirmation Protocol
+
+Before applying any fix to a failing test or source file:
+
+1. **Report the exact location** — file path and line number(s) where the fix will be applied, e.g. `pages/KontaktPage.ts:32`
+2. **Describe the fix** — one sentence explaining what will change and why
+3. **Ask for confirmation** — wait for explicit user approval before editing
+
+Example:
+> **Fix needed:** `tests/news.spec.ts:48` — `h1` assertion will be updated to accept `h2` as fallback because the article detail page renders no H1.
+> **Proceed?**
+
+Do not apply any fix silently. Always pause for confirmation first.
+
 ## Output conventions
 
 After every `npx playwright test` run, always produce a markdown summary table — even for all-pass runs:
